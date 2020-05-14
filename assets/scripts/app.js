@@ -22,15 +22,6 @@ let movieExists;
 let addedMovie;
 let selectedMovie;
 
-const showPopup = (el, el2) => {
-  el.classList.add('visible');
-  el2.classList.add('visible');
-};
-const hidePopup = (el, el2) => {
-  el.classList.remove('visible');
-  el2.classList.remove('visible');
-};
-
 const clearMovieInputs = () => {
   addModalInputs.forEach((input) => {
     input.value = '';
@@ -39,12 +30,22 @@ const clearMovieInputs = () => {
 
 const showAddModal = () => {
   clearMovieInputs();
-  showPopup(backdrop, addModal);
+  backdrop.classList.add('visible');
+  addModal.classList.add('visible');
 };
-const hideAddModal = () => hidePopup(backdrop, addModal);
+const hideAddModal = () => {
+  backdrop.classList.remove('visible');
+  addModal.classList.remove('visible');
+};
 
-const showDeleteModal = () => showPopup(backdrop, deleteModal);
-const hideDeleteModal = () => hidePopup(backdrop, deleteModal);
+const showDeleteModal = () => {
+  backdrop.classList.add('visible');
+  deleteModal.classList.add('visible');
+}
+const hideDeleteModal = () => {
+  backdrop.classList.remove('visible');
+  deleteModal.classList.remove('visible');
+};
 
 const enterMovie = () => {
   const movieEntry = {
@@ -55,10 +56,10 @@ const enterMovie = () => {
 
   let i = 0;
   for (key in movieEntry) {
-    if (addModalInputs[i].value) {
+    if (addModalInputs[i].value && addModalInputs[2].value <= 5) {
       movieEntry[key] = addModalInputs[i].value;
     } else {
-      alert('Enter proper values for each input to continue');
+      alert('Enter proper values to continue (rating can\'t be above 5)');
       movieExists = false;
       return
     }
@@ -68,21 +69,19 @@ const enterMovie = () => {
   clearMovieInputs();
   movies.push(movieEntry);
 };
-const addToMovieList = () => {
+const imageError = (img) => {
   let defaultImageSrc = 'https://kare.ee/images/no-image.jpg';
+  img.src = defaultImageSrc;
+};
+const addToMovieList = () => {
   if (movies.length) {
     addedMovie = movies[movies.length-1];
     movieElement.innerHTML = '<div class="movie-element__image">' +
-                             `<img src="${addedMovie.imageUrl}" alt="${addedMovie.title}" />` +
+                             `<img src="${addedMovie.imageUrl}" alt="${addedMovie.title}" onerror="imageError(this)" />` +
                              '</div><div class="movie-element__info">' +
                              `<h2>${addedMovie.title} <p>${addedMovie.rating} stars</p></h2>` + 
                              '<button class="movie-element__delete btn btn--danger">Delete Movie</button>'
                              '</div>';
-    let movieImg = movieElement.querySelector('img');
-    movieImg.onerror = () => {
-      movieImg.src = defaultImageSrc;
-    }
-    movieImg.onerror();
     movieList.appendChild(movieElement.cloneNode(true));
   }
 };
@@ -106,10 +105,7 @@ const addMovie = () => {
 };
 
 const deleteMovie = () => {
-  let movieTitle = selectedMovie
-                  .firstElementChild
-                  .firstElementChild
-                  .getAttribute('alt');
+  let movieTitle = selectedMovie.querySelector('img').getAttribute('alt');
   
   movieList.removeChild(selectedMovie);
   console.log(`You deleted the following movie: ${movieTitle}`);
