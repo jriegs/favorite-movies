@@ -22,9 +22,10 @@ const movies = [];
 let movieExists;
 let addedMovie;
 let selectedMovie;
+let deleteMovieId;
 
 const updateUI = () => {
-  if (movies.length === 0) {
+  if (movieList.length === 0) {
     entryTextSection.style.display = 'block';
   } else {
     entryTextSection.style.display = 'none';
@@ -58,6 +59,7 @@ const hideDeleteModal = () => {
 
 const enterMovie = () => {
   const movieEntry = {
+    'id': Math.random().toString(),
     'title': '', // Tropic Thunder
     'imageUrl': '', // https://upload.wikimedia.org/wikipedia/en/d/d6/Tropic_thunder_ver3.jpg
     'rating': '' // 4
@@ -65,10 +67,13 @@ const enterMovie = () => {
 
   let i = 0;
   for (key in movieEntry) {
+    if (key === 'id') {
+      continue;
+    }
     if (
         addModalInputs[i].value.trim() && 
-        addModalInputs[2].value >= 1 &&
-        addModalInputs[2].value <= 5
+        +addModalInputs[2].value >= 1 &&
+        +addModalInputs[2].value <= 5
     ) {
       movieEntry[key] = addModalInputs[i].value;
     } else {
@@ -97,6 +102,7 @@ const addToMovieList = () => {
       <button class="movie-element__delete btn btn--danger">Delete Movie</button>
       </div>
     `;
+    movieElement.setAttribute('data-movie-id', addedMovie.id);
     movieList.appendChild(movieElement.cloneNode(true));
   }
 };
@@ -120,8 +126,21 @@ const addMovie = () => {
   }
 };
 
+const removeMovie = (movieId) => {
+  let movieIndex = 0;
+  for (const movie of movies) {
+    if (movie['id'] === movieId) {
+      break
+    }
+    console.log('')
+    movieIndex++
+  }
+  movies.splice(movieIndex, 1);
+}
+
 const deleteMovie = () => {
   let movieTitle = selectedMovie.querySelector('img').getAttribute('alt');
+  removeMovie(selectedMovie.getAttribute('data-movie-id'));
   movieList.removeChild(selectedMovie);
   console.log(`You deleted the following movie: ${movieTitle}`);
   hideDeleteModal();
