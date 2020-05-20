@@ -25,10 +25,10 @@ let selectedMovie;
 let deleteMovieId;
 
 const updateUI = () => {
-  if (movies.length === 0) {
-    entryTextSection.style.display = 'block';
-  } else {
+  if (movies.length !== 0) {
     entryTextSection.style.display = 'none';
+  } else {
+    entryTextSection.style.display = 'block';
   }
 };
 
